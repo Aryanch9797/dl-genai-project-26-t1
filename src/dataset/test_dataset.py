@@ -1,3 +1,10 @@
+import torch
+import torchaudio
+from torch.utils.data import Dataset
+import os
+import math
+import pandas as pd
+
 class test_mashed_dataset(Dataset):
     def __init__(self, path, test_csv, sr, duration):
         self.path = path
@@ -21,7 +28,7 @@ class test_mashed_dataset(Dataset):
     def __len__(self):
         return len(self.test_csv)
     def __getitem__(self,index):
-        filename = test_csv.iloc[index][0]
+        filename = self.test_csv.iloc[index][0]
         path = self.path+filename
         
         """Load and preprocess audio."""

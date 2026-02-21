@@ -1,5 +1,19 @@
+import torch
+import torchaudio
+import os
+import random
+import numpy as np
+from glob import glob
+from pathlib import Path
+import pandas as pd
+import warnings
+warnings.filterwarnings('ignore')
+import math
+
+
+
 class MelGenerator:  
-    def __init__(self, stems_dir, noise_dir, bpm_cache):
+    def __init__(self, stems_dir, noise_dir, bpm_cache, SR, GENRES):
         self.stems_dir = stems_dir
         self.noise_dir = noise_dir
         self.sr = SR  
@@ -168,12 +182,12 @@ def get_dir_size_gb(path):
     total = sum(f.stat().st_size for f in Path(path).rglob('*') if f.is_file())
     return total / (1024**3)
 
-def generate():
+def generate(STEMS_DIR, NOISE_DIR, BPM_CSV, OUTPUT_DIR, GENRES, SR=16000, MAX_STORAGE_GB=10):
     bpm_df = pd.read_csv(BPM_CSV)
     bpm_cache = dict(zip(bpm_df["path"], bpm_df["bpm"]))
     del bpm_df
     # Create generator
-    gen = MelGenerator(STEMS_DIR, NOISE_DIR, bpm_cache)
+    gen = MelGenerator(STEMS_DIR, NOISE_DIR, bpm_cache, SR, GENRES)
     # Create directories
     base = Path(OUTPUT_DIR)
     base.mkdir(exist_ok=True)   

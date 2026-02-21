@@ -1,6 +1,11 @@
 """
 This script calculates the BPM (beats per minute) for each audio file inside the provided path and save the results in a CSV for later use.
 """
+import glob
+import pandas as pd
+import librosa
+from tqdm import tqdm
+
 def calculate_bpm(path):
     audio_files = glob.glob(path)
     bpm_data = []
