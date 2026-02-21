@@ -1,4 +1,15 @@
-def training_model(model, optimizer, train, val, epochs, patience, loss_fn, scheduler):
+import torch
+import torch.nn as nn
+import torch.optim as optim
+import numpy as np
+from sklearn.metrics import accuracy_score, f1_score, classification_report, confusion_matrix
+import seaborn as sns
+import matplotlib.pyplot as plt
+import wandb
+from tqdm import tqdm
+
+
+def training_model(model, optimizer, train, val, epochs, patience, loss_fn, scheduler, device):
     """
     Custom training loop for pytorch model. with early stopping and model checkpointing and logging to wandb.
     """
