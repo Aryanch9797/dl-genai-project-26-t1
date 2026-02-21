@@ -4,7 +4,7 @@ from torch.utils.data import Dataset
 import os
 import numpy as np
 import random
-import torch.nn.functional as F
+import torchaudio.functional as F
 from glob import glob
 import pandas as pd
 
