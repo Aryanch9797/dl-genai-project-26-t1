@@ -12,6 +12,8 @@ class TransformerLayer(nn.Module):
         
         self.layer_norm1 = nn.LayerNorm(embed_dim)
         self.layer_norm2 = nn.LayerNorm(embed_dim)
+
+        self.out_proj = nn.Linear(embed_dim, embed_dim)
         
         self.feed_forward_network = nn.Sequential(
             nn.Linear(embed_dim, 512),
@@ -48,17 +50,16 @@ class TransformerLayer(nn.Module):
         # .contiguous() ensures memory is aligned before reshaping
         attention_output = attention_output.contiguous().view(B, N, C)
         
-        return attention_output
-
+        return self.out_proj(attention_output)
+    
     def forward(self, x):
+        x = self.layer_norm1(x)
         attention_output = self.multi_head_attention(x)
         x = x + attention_output  
-        x = self.layer_norm1(x)
-        
+        x = self.layer_norm2(x)
         feed_forward_output = self.feed_forward_network(x)
         x = x + feed_forward_output  
-        x = self.layer_norm2(x)
-        
+
         return x 
 
 
@@ -77,6 +78,8 @@ class scratch_vision_transformer(nn.Module):
         self.layers = nn.ModuleList([
                     TransformerLayer(embed_dim=256) for _ in range(num_layers)
                 ])  
+        nn.init.normal_(self.positional_embedding, std=0.02)
+        nn.init.normal_(self.cls_token, std=0.02)
         self.classifier_layers = nn.Sequential(
             nn.LayerNorm(256),
             nn.Linear(256, 10)
