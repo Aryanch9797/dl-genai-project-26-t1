@@ -102,9 +102,9 @@ class scratch_vision_transformer(pl.LightningModule):
         final_preds = torch.argmax(preds, dim=1)
         self.train_acc.update(final_preds, y)
         self.train_f1.update(final_preds, y)
-        self.log('train_loss', loss, on_step=False, on_epoch=True, prog_bar=True, logger=True)
-        self.log('train_acc', self.train_acc, on_step=False, on_epoch=True, prog_bar=True, logger=True)
-        self.log('train_f1',  self.train_f1,  on_step=False, on_epoch=True, prog_bar=True, logger=True)
+        self.log('train/loss', loss, on_step=False, on_epoch=True, prog_bar=True, logger=True)
+        self.log('train/accuracy', self.train_acc, on_step=False, on_epoch=True, prog_bar=True, logger=True)
+        self.log('train/f1_macro',  self.train_f1,  on_step=False, on_epoch=True, prog_bar=True, logger=True)
         return loss
     
     def validation_step(self, batch, batch_idx):
@@ -114,9 +114,9 @@ class scratch_vision_transformer(pl.LightningModule):
         final_preds = torch.argmax(preds, dim=1)
         self.val_acc.update(final_preds, y)
         self.val_f1.update(final_preds, y)
-        self.log('val_loss', loss, on_step=False, on_epoch=True, prog_bar=True, logger=True)
-        self.log('val_acc', self.val_acc, on_step=False, on_epoch=True, prog_bar=True, logger=True)
-        self.log('val_f1',  self.val_f1,  on_step=False, on_epoch=True, prog_bar=True, logger=True)
+        self.log('val/loss', loss, on_step=False, on_epoch=True, prog_bar=True, logger=True)
+        self.log('val/accuracy', self.val_acc, on_step=False, on_epoch=True, prog_bar=True, logger=True)
+        self.log('val/f1_macro',  self.val_f1,  on_step=False, on_epoch=True, prog_bar=True, logger=True)
 
     def configure_optimizers(self):
         optimizer = torch.optim.AdamW(self.parameters(), lr=self.lr, weight_decay=self.weight_decay)
