@@ -54,7 +54,7 @@ class TransformerLayer(nn.Module):
 
 class scratch_vision_transformer(pl.LightningModule):
     
-    def __init__(self , num_layers, lr, weight_decay, patience, scheduler_patience, scheduler_factor,max_epochs):
+    def __init__(self , num_layers, lr, weight_decay, patience, scheduler_patience, scheduler_factor, max_epochs):
         super().__init__()
         self.lr = lr
         self.weight_decay = weight_decay
@@ -139,7 +139,6 @@ class scratch_vision_transformer(pl.LightningModule):
             schedulers=[warmup_scheduler, cosine_scheduler],
             milestones=[warmup_epochs]
         )
-
         
         return {"optimizer": optimizer, "lr_scheduler": scheduler, "monitor": "val_f1"}
 
