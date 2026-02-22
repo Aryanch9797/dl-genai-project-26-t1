@@ -71,7 +71,7 @@ class scratch_vision_transformer(pl.LightningModule):
                                         bias=False)
         self.cls_token = nn.Parameter(torch.randn(1, 1, 256))
         self.layers = nn.ModuleList([
-                    TransformerLayer(embed_dim=256, num_heads=8) for _ in range(num_layers)
+                    TransformerLayer(embed_dim=256) for _ in range(num_layers)
                 ])  
         nn.init.normal_(self.positional_embedding, std=0.02)
         nn.init.normal_(self.cls_token, std=0.02)
