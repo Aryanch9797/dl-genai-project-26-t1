@@ -67,7 +67,11 @@ class AST_model(pl.LightningModule):
         }
 
     def forward(self, x):
-        x = self.model(x).logits
+        if x.dim() == 5:
+            x = x.squeeze(1).squeeze(2)   # [B, 1, mel, 1, T] → [B, mel, T]
+        if x.dim() == 3:
+            x = x.transpose(1, 2)          # [B, mel, T] → [B, T, mel]
+        x = self.model(input_values=x).logits
         return x
 
 
