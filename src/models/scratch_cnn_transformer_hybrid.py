@@ -101,7 +101,7 @@ class scratch_hybrid_vision(pl.LightningModule):
         self.max_epochs = max_epochs
         self.dropout = dropout
         self.num_layers = num_layers
-        self.positional_embedding = nn.Parameter(torch.randn(1, 657, 256))
+        self.positional_embedding = nn.Parameter(torch.randn(1, 513, 256))
         self.cls_token = nn.Parameter(torch.randn(1, 1, 256))
 
         self.prev_channel = 1
