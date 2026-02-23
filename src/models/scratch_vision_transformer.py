@@ -5,8 +5,9 @@ import pytorch_lightning as pl
 from torchmetrics import Accuracy, F1Score
 
 class TransformerLayer(nn.Module):
-    def __init__(self, embed_dim=256):
+    def __init__(self, dropout, embed_dim=256):
         super().__init__()
+        self.dropout = dropout
         self.num_heads = 8
         self.head_dim = embed_dim // self.num_heads
         self.weights_q = nn.Linear(embed_dim, embed_dim)
@@ -21,7 +22,7 @@ class TransformerLayer(nn.Module):
         self.feed_forward_network = nn.Sequential(
             nn.Linear(embed_dim, 512),
             nn.GELU(),
-            nn.Dropout(0.1),
+            nn.Dropout(self.dropout),
             nn.Linear(512, embed_dim)
         )
 
@@ -34,11 +35,10 @@ class TransformerLayer(nn.Module):
 
         # Flash Attention when available; also applies scaled dot-product and attention dropout
         
-        attention_output = F.scaled_dot_product_attention(q, k, v, dropout_p=0.1)
+        attention_output = F.scaled_dot_product_attention(q, k, v, dropout_p=self.dropout)
         # Merge heads back: (B, N, C)
         attention_output = attention_output.transpose(1, 2).contiguous().view(B, N, C)
-
-        return self.out_proj(attention_output)
+        return F.dropout(self.out_proj(attention_output), p=self.dropout, training=self.training)
     
     def forward(self, x):
         x_norm = self.layer_norm1(x)
@@ -54,7 +54,7 @@ class TransformerLayer(nn.Module):
 
 class scratch_vision_transformer(pl.LightningModule):
     
-    def __init__(self , num_layers, lr, weight_decay, patience, scheduler_patience, scheduler_factor, max_epochs):
+    def __init__(self , num_layers, lr, weight_decay, patience, scheduler_patience, scheduler_factor, max_epochs, dropout):
         super().__init__()
         self.lr = lr
         self.weight_decay = weight_decay
@@ -62,6 +62,7 @@ class scratch_vision_transformer(pl.LightningModule):
         self.scheduler_patience = scheduler_patience
         self.scheduler_factor = scheduler_factor
         self.max_epochs = max_epochs
+        self.dropout = dropout
         self.num_layers = num_layers
         self.positional_embedding = nn.Parameter(torch.randn(1, 657, 256))
         self.embedding_generator = nn.Conv2d(in_channels=1,
@@ -71,7 +72,7 @@ class scratch_vision_transformer(pl.LightningModule):
                                         bias=False)
         self.cls_token = nn.Parameter(torch.randn(1, 1, 256))
         self.layers = nn.ModuleList([
-                    TransformerLayer(embed_dim=256) for _ in range(num_layers)
+                    TransformerLayer(embed_dim=256, dropout=self.dropout) for _ in range(num_layers)
                 ])  
         nn.init.normal_(self.positional_embedding, std=0.02)
         nn.init.normal_(self.cls_token, std=0.02)
@@ -93,6 +94,7 @@ class scratch_vision_transformer(pl.LightningModule):
         cls_tokens = self.cls_token.expand(batch, -1, -1)
         x = torch.cat((cls_tokens,x), dim=1)  # (batch_size, 657, embedding_dim)
         x = x + self.positional_embedding
+        x = F.dropout(x, p=self.dropout, training=self.training)
         return x
     
     def training_step(self, batch, batch_idx):
