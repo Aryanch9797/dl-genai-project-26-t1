@@ -11,12 +11,6 @@ class AST_model(pl.LightningModule):
         
         self.model = ASTForAudioClassification.from_pretrained("MIT/ast-finetuned-audioset-10-10-0.4593", num_labels=10,ignore_mismatched_sizes=True)
         
-        for param in self.model.parameters():
-            param.requires_grad = False
-        
-        for param in self.model.classifier.parameters():
-            param.requires_grad = True
-        
         self.loss_fn = nn.CrossEntropyLoss()
         self.train_acc = Accuracy(task='multiclass', num_classes=10)
         self.train_f1  = F1Score(task='multiclass', num_classes=10, average='macro')
@@ -54,20 +48,22 @@ class AST_model(pl.LightningModule):
         self.log('val/f1_macro',  self.val_f1,  on_step=False, on_epoch=True, prog_bar=True, logger=True)
 
     def configure_optimizers(self):
-        optimizer = torch.optim.AdamW(self.model.classifier.parameters(), lr=self.lr, weight_decay=1e-4)
-        scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
-        optimizer, mode='max', factor=0.5, patience=2)
-
-        return {
-            'optimizer': optimizer,
-            'lr_scheduler': {
-                'scheduler': scheduler,
-                'monitor': 'val/f1_macro'
-            }
-        }
+        # Separate parameters
+        backbone_params = self.model.audio_spectrogram_transformer.parameters()
+        head_params = self.model.classifier.parameters()
+    
+        optimizer = torch.optim.AdamW([
+            {'params': backbone_params, 'lr': self.lr * 0.1}, # Slow learning for the body
+            {'params': head_params, 'lr': self.lr}           # Faster learning for the head
+        ], weight_decay=1e-4)
+    
+        scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=10)
+        return [optimizer], [scheduler]
 
     def forward(self, x):
-        x = x.squeeze()
+        x = x.squeeze(1)
+        x = x.transpose(1,2)
+        x = x[:, :1024, :]
         x = self.model(input_values=x).logits
         return x
 
