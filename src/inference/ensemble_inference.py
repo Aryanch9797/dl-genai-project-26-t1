@@ -22,21 +22,16 @@ def ensemble_and_submit(models, loader, label_map, device, AST_model=None, AST_l
             x = x.squeeze(0) 
             x = x.to(device)
             
-
             logits_cnn = models[0](x)
             logits_resnet = models[1](x)
-
             avg_logits_cnn = torch.mean(logits_cnn, dim=0)        # calculating mean for all chunks
             avg_logits_resnet = torch.mean(logits_resnet, dim=0)
-
-            final_logits = (avg_logits_cnn + avg_logits_resnet ) / 2  # average all three models
-            
+            final_logits = (avg_logits_cnn + avg_logits_resnet ) / 2  # average all three models            
             if AST_model is not None and AST_loader is not None:
                 ast_x = AST_loader.dataset[i][0].unsqueeze(0).to(device)  # Get AST input for the same index
                 logits_ast = AST_model(ast_x)
                 avg_logits_ast = torch.mean(logits_ast, dim=0)  # Average over chunks for AST
-
-                final_logits = (logits_cnn + logits_resnet + avg_logits_ast) / 3  # Average all three models
+                final_logits = (avg_logits_cnn + avg_logits_resnet + avg_logits_ast) / 3  # Average all three models
             
             pred_idx = torch.argmax(final_logits).item()
             predicted_label = label_map[pred_idx]
