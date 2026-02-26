@@ -85,4 +85,20 @@ Model | Parameters | Macro F1 | Inference Speed | Best For
 1. Scratch CNN
 Simple CNN with  6.3M parameters it is faster to train and inference while having performance extremely close or better then other models with much more parameters.
 <img width="3232" height="1312" alt="Gemini_Generated_Image_eh3y5eh3y5eh3y5e" src="https://github.com/user-attachments/assets/0538eddf-5681-426a-9ecb-87baf41b736e" />
+**Layer details:**
+ * **2D conv** (find pattern in images)
+ * **Batch normalization** (prevent vanishing gradient and helps to converge faster)
+ *  **Relu** (add non-linearity)
+ * **2D max pool** (decompose image but reducing length and width)
+ * **Dropout** (prevent overfitting)
 
+**Classification head:**
+* Adaptive Average Pool (calculate avg to find 1 float for each channel)
+* Flatten (Flatten all 512 floats)
+* Linear Classifier (512 -> 10 -> genre logits)   
+
+**Training Strategy:**
+*   Batch size 124.
+*   Learning rate of 0.001 with weight decay of 0.01 and reduce lr with a factor of 0.5.
+*   Training data samples 101771.
+*   Validation data samples 25452.
