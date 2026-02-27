@@ -109,7 +109,8 @@ Simple CNN with  6.3M parameters it is faster to train and inference while havin
 
 ## 2. **ResNet-50**
 
-<img width="2000" height="1094" alt="image" src="https://github.com/user-attachments/assets/294c3c23-1622-4648-9c50-0e829d7a6159" />
+<img width="1351" height="722" alt="3a93c9fd" src="https://github.com/user-attachments/assets/fb28c2ef-de49-4345-86e9-743e40e7c6db" />
+
 
 ### **Architecture Details:**
 * The model consists of **50 layers**, primarily organized into convolutional "Bottleneck" blocks with skip connections.
