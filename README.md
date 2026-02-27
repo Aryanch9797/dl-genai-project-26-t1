@@ -109,5 +109,4 @@ Simple CNN with  6.3M parameters it is faster to train and inference while havin
 ## 2. **Resnet-50**
 
 <img width="2000" height="1094" alt="image" src="https://github.com/user-attachments/assets/294c3c23-1622-4648-9c50-0e829d7a6159" />
-<img width="2000" height="1094" alt="image" src="https://github.com/user-attachments/assets/294c3c23-1622-4648-9c50-0e829d7a6159" />
 
