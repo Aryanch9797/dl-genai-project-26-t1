@@ -106,7 +106,25 @@ Simple CNN with  6.3M parameters it is faster to train and inference while havin
 *   Validation data samples 25452.
 
   
-## 2. **Resnet-50**
+
+## 2. **ResNet-50**
 
 <img width="2000" height="1094" alt="image" src="https://github.com/user-attachments/assets/294c3c23-1622-4648-9c50-0e829d7a6159" />
+
+### **Architecture Details:**
+* The model consists of **50 layers**, primarily organized into convolutional "Bottleneck" blocks with skip connections.
+* Skip (or residual) connections prevent the vanishing gradient problem, which helps in effectively training much deeper models.
+* **Steps inside each Bottleneck block:**
+  1. **1x1 Conv layer:** Reduces input channels for more efficient and faster calculations.
+  2. **Batch Norm & ReLU:** Normalizes data and adds non-linearity.
+  3. **3x3 Conv layer:** Extracts spatial features and finds patterns in the images.
+  4. **Batch Norm & ReLU:** Normalizes and adds non-linearity.
+  5. **1x1 Conv layer:** Increases input channels to match the required dimensions for the next block.
+  6. **Skip Connection:** The original block input is added directly to this output before the final ReLU activation.
+
+### **Training Strategy:**
+* **Batch Size:** 64
+* **Learning Rate:** Initial rate of `0.001` with a weight decay of `0.01`. A learning rate scheduler is used to reduce the LR by a factor of `0.5`.
+* **Training Data:** 101,771 samples
+* **Validation Data:** 25,452 samples
 
