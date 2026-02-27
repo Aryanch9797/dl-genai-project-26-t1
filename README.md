@@ -109,6 +109,8 @@ Simple CNN with  6.3M parameters it is faster to train and inference while havin
 
 ## 2. **ResNet-50**
 
+Residual network having 23.5M parameters with skipped connections to make deep architecture possible. 
+
 <img width="1351" height="722" alt="3a93c9fd" src="https://github.com/user-attachments/assets/fb28c2ef-de49-4345-86e9-743e40e7c6db" />
 
 
