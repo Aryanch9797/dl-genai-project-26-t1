@@ -131,3 +131,11 @@ Residual network having 23.5M parameters with skipped connections to make deep a
 * **Training Data:** 101,771 samples
 * **Validation Data:** 25,452 samples
 
+
+## 3. **AST**
+Audio Spectrogram Transformer with 86.2M parameters pre-trained on log mel-spectrograms.
+
+<img width="401" height="331" alt="image" src="https://github.com/user-attachments/assets/6231a2af-3d93-4d0f-a2ad-3ce3e9eed8c0" />
+
+
+
