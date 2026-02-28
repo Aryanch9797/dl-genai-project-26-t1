@@ -188,4 +188,22 @@ To generate a single training sample, the following dynamic pipeline was applied
 * **Training Split:** 101,771 samples
 * **Validation Split:** 25,452 samples
 
+### Installation
+```bash
+ggit clone https://github.com/Aryanch9797/dl-genai-project-26-t1.git
+cd dl-genai-project-26-t1
+pip install -r requirements.txt
+```
+
+## 📚 Key References
+* [Audio Deep Learning Made Simple](https://towardsdatascience.com/audio-deep-learning-made-simple-part-1-state-of-the-art-techniques-da1d3dff2504/)
+* [Deep Residual Learning for Image Recognition](https://arxiv.org/pdf/1512.03385)
+* [Audio Spectrogram Transformer](https://arxiv.org/pdf/2104.01778)
+* [Hugging face AST](https://huggingface.co/docs/transformers/en/model_doc/audio-spectrogram-transformer#transformers.ASTModel)
+
+## 👤 Author
+Aryan chauhan
+
+#### Contact:
+- **E-Mail:** [aryanch9797@gmail.com](mailto:aryanch9797@gmail.com)
 
