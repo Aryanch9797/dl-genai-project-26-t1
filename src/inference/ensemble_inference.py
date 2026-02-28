@@ -18,7 +18,21 @@ def ensemble_and_submit(models, loader, label_map, device, AST_model=None, AST_l
     print(f"Starting Ensemble on {device}...")
 
     with torch.inference_mode():
-        for i, x in enumerate(tqdm(loader)):
+        
+        if AST_model is not None and AST_loader is not None:
+            combined_loader = zip(loader, AST_loader)
+        else:
+            combined_loader = loader
+
+        for i, batch_data in enumerate(tqdm(combined_loader)):
+            if AST_model is not None and AST_loader is not None:
+                x,ast_x = batch_data  # Unzip the combined loader output
+                # x = x[0]
+                # ast_x = ast_x[0]
+            else:
+                x = batch_data
+                # x = x[0] 
+            
             x = x.squeeze(0) 
             x = x.to(device)
             
@@ -26,9 +40,10 @@ def ensemble_and_submit(models, loader, label_map, device, AST_model=None, AST_l
             logits_resnet = models[1](x)
             avg_logits_cnn = torch.mean(logits_cnn, dim=0)        # calculating mean for all chunks
             avg_logits_resnet = torch.mean(logits_resnet, dim=0)
-            final_logits = (avg_logits_cnn + avg_logits_resnet ) / 2  # average all three models            
+            final_logits = (avg_logits_cnn + avg_logits_resnet ) / 2  # average all three models  
+            
             if AST_model is not None and AST_loader is not None:
-                ast_x = AST_loader.dataset[i][0].unsqueeze(0).to(device)  # Get AST input for the same index
+                ast_x = ast_x.squeeze(0).to(device)
                 logits_ast = AST_model(ast_x)
                 avg_logits_ast = torch.mean(logits_ast, dim=0)  # Average over chunks for AST
                 final_logits = (avg_logits_cnn + avg_logits_resnet + avg_logits_ast) / 3  # Average all three models
