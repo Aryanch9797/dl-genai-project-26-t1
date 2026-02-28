@@ -132,10 +132,24 @@ Residual network having 23.5M parameters with skipped connections to make deep a
 * **Validation Data:** 25,452 samples
 
 
-## 3. **AST**
-Audio Spectrogram Transformer with 86.2M parameters pre-trained on log mel-spectrograms.
+## 3. **AST (Audio Spectrogram Transformer)**
+Audio Spectrogram Transformer with 86.2M parameters. A convolution free fully attention based model trained on audio log mel-spectrograms.
 
 <img width="401" height="331" alt="image" src="https://github.com/user-attachments/assets/6231a2af-3d93-4d0f-a2ad-3ce3e9eed8c0" />
 
+### **Model Architecture:**
+* Audio log mel-spectrograms with 128 frequency bands is used as an input.
+* Spectrogram is split into 16x16 patches with an overlap of 6 in both time and frequency dimension.
+* Each 16x16 patch is flatten to make a embedding of size 768.
+* A learnable positional embedding of size 768 is added to each embedding
+* A [CLS] token is appended at the beginning of the sequence. This [CLS] token will be used in classification layer at the end of the transformer sequences.
+* Sequence is passed to 12 transformer encoding layers.
+* [CLS] token is retrieved from the sequence and then we apply a classification layer to get logits for all 10 classes.
+
+### **Training Strategy:**
+* Batch size 32.
+* Learning rate of 5e-5 for head/classifier and 1e-5 for backbone/transformer layers.
+*   Training data samples 101771.
+*   Validation data samples 25452.
 
 
