@@ -65,20 +65,20 @@ Data -> Data Preprocessing and Dataset creation -> Model configuration -> Traini
 **Predict the correct genre label** for each noisy mashup. The model should be capable of handling  Instrument balance changes,   Cross-song stem recombination, Tempo variations, added noise and songs of different durations.
 
 ### Key Results
-Model | Parameters | Macro F1 | Inference Speed | Best For
-|--    |-----------|----------|---------------|-----------------|
-**Scratch CNN**| 6.3M | 0.98540 | Fastest |  light and decent accuracy
-|**ResNet-50**| 23.5M| 0.98729  | Fast  |  moderate and Great accuracy
-|**AST**| 86.2M| 0.98322| moderate | heavy and underperforming 
+Model | Parameters | Macro F1 | Best For | Inference time (3k samples)
+|--    |-----------|----------|-----------------|--------------|
+**Scratch CNN**| 6.3M | 0.98540 | Fast, light and decent accuracy | 1min
+|**ResNet-50**| 23.5M| 0.98729  | Fast, moderate and Great accuracy | 1min 6sec
+|**AST**| 86.2M| 0.98720 | slow, heavy and Great accuracy | 6min 30 sec
 
-**Scratch CNN** and  **ResNet-50** ensemble scored 0.99068 while taking  2x less time for inference then **AST**
+**Scratch CNN** and  **ResNet-50** ensemble scored 0.99068 while taking 2min for 3k samples.
 
-**Scratch CNN** , **ResNet-50** and **AST** ensemble scored 0.99070 while taking time  3x more then **Scratch CNN** and  **ResNet-50** ensemble .
+**Scratch CNN** , **ResNet-50** and **AST** ensemble scored 0.99599 while taking 7min 30sec for 3k samples.
 
 **Kaggle Competition Performance:**
 
 -   Private Leaderboard:  **NOT RELEASED YET** , ** **
--   Public Leaderboard:  **0.99070** , **RANK 1**
+-   Public Leaderboard:  **0.99599** , **RANK 1**
 
 # **Architecture Details**
 
