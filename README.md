@@ -152,4 +152,38 @@ Audio Spectrogram Transformer with 86.2M parameters. A convolution free fully at
 *   Training data samples 101771.
 *   Validation data samples 25452.
 
+## Training Data Preparation
+
+The raw training data consists of 100 songs distributed evenly across **10 genres**. Each song is separated into 4 distinct audio stems:
+* `drums.wav`
+* `vocals.wav`
+* `bass.wav`
+* `others.wav`
+
+The hidden test data presents several distinct domain shifts: songs range from 6 to 30 seconds in length, feature cross-song stem recombination, exhibit tempo variations, have altered instrument balances, and contain environmental noise (sourced from ESC-50).
+
+To train a robust model capable of generalizing to these conditions, a highly diverse custom dataset was synthesized to closely mirror the test distribution.
+
+### Data Synthesis & Augmentation Pipeline
+To generate a single training sample, the following dynamic pipeline was applied:
+
+1. **Stem Recombination:** All 4 stems are chosen randomly within a target genre to create a completely new track, ensuring an equal number of training samples per genre.
+2. **Duration Sampling:** The final audio length is dynamically selected:
+   * **50% probability:** 30-second sample
+   * **40% probability:** 24 to 30-second sample
+   * **10% probability:** 6 to 24-second sample
+3. **Instrument Balancing (40% probability):** Randomly scales the amplitude of individual stems using a balance coefficient ranging from 0.4 to 1.0.
+4. **Beat Synchronization:** Computes the BPM for all 4 stems, randomly selects one stem as the anchor, and synchronizes the remaining stems to that tempo using PyTorch interpolation (`torch.nn.functional.interpolate`).
+5. **Noise Injection (70% probability):** A random 5-second noise clip is superimposed onto a random segment of the generated audio with random intensity.
+
+### Feature Extraction for AST
+* **Chunking:** The synthesized audio is sliced into uniform **10.24-second chunks** (with shorter clips padded appropriately).
+* **Mel-Spectrogram Generation:** These chunks are converted into log-mel spectrograms.
+* **Design Rationale:** The 16,000 Hz sample rate and 10.24-second window were specifically chosen to align with the architectural requirements of the Audio Spectrogram Transformer (AST). At 16kHz, 10.24 seconds yields exactly 163,840 samples. Paired with a hop length of 160 and 128 mel-bins, this extracts a mel-spectrogram of shape 128x1024—the exact optimal input dimension for the AST.
+
+### Final Dataset Statistics
+* **Total Generated Samples:** 127,223
+* **Training Split:** 101,771 samples
+* **Validation Split:** 25,452 samples
+
 
