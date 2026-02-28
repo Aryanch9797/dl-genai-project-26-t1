@@ -176,10 +176,10 @@ To generate a single training sample, the following dynamic pipeline was applied
 4. **Beat Synchronization:** Computes the BPM for all 4 stems, randomly selects one stem as the anchor, and synchronizes the remaining stems to that tempo using PyTorch interpolation (`torch.nn.functional.interpolate`).
 5. **Noise Injection (70% probability):** A random 5-second noise clip is superimposed onto a random segment of the generated audio with random intensity.
 
-### Feature Extraction for AST
+### Audio Preprocessing & Feature Extraction
 * **Chunking:** The synthesized audio is sliced into uniform **10.24-second chunks** (with shorter clips padded appropriately).
 * **Mel-Spectrogram Generation:** These chunks are converted into log-mel spectrograms.
-* **Design Rationale:** The 16,000 Hz sample rate and 10.24-second window were specifically chosen to align with the architectural requirements of the Audio Spectrogram Transformer (AST). At 16kHz, 10.24 seconds yields exactly 163,840 samples. Paired with a hop length of 160 and 128 mel-bins, this extracts a mel-spectrogram of shape 128x1024—the exact optimal input dimension for the AST.
+* **Design Rationale:** The 16,000 Hz sample rate and 10.24-second window were specifically chosen to create a highly optimized, standardized input shape across the project's models. At 16kHz, 10.24 seconds yields exactly 163,840 samples. Paired with a hop length of 160 and 128 mel-bins, this extracts a log-mel spectrogram of shape 128x1024. While multiple architectures are utilized, this specific dimension serves as the mathematically perfect input for the Audio Spectrogram Transformer (AST), making it an ideal anchor for the entire preprocessing pipeline.
 
 ### Final Dataset Statistics
 * **Total Generated Samples:** 127,223
