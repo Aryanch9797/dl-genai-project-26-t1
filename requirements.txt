@@ -1,5 +1,5 @@
-librosa==0.11.0
-numpy==2.0.2
+librosa==0.10.1
+numpy==1.26.4
 pandas==2.2.2
 tqdm==4.67.1
 matplotlib==3.10.0
@@ -14,3 +14,4 @@ torchmetrics==1.8.2
 transformers==4.57.1
 wandb==0.22.2
 stremlit==1.28.0
+huggingface-hub
