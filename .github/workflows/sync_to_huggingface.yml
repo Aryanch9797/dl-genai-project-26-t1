@@ -1,9 +1,9 @@
 name: Sync to Hugging Face hub
+
 on:
   push:
     branches: [main]
-
-  # to run this workflow manually from the Actions tab
+  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
 jobs:
@@ -12,9 +12,39 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          fetch-depth: 0
-          lfs: true
-      - name: Push to hub
+          fetch-depth: 1 # Changed to 1: We only need the latest files, saving download time.
+
+      - name: Prepare Deployment Directory
+        run: |
+          # 1. Create a fresh, isolated directory
+          mkdir deploy_space
+          
+          # 2. Copy the root-level deployment files
+          cp app.py deploy_space/
+          cp requirements.txt deploy_space/
+          
+          # 3. Maintain the directory structure for your imports
+          # We create the src folder first, then copy the subfolder into it.
+          mkdir -p deploy_space/src
+          cp -r src/Deployment_predictions deploy_space/src/
+
+      - name: Push isolated files to Hub
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
-        run: git push --force https://Aryan9797:$HF_TOKEN@huggingface.co/spaces/Aryan9797/mashup-genre-classifier main
+        run: |
+          cd deploy_space
+          
+          # Initialize a brand new git repository to drop all historical file bloat
+          git init
+          git checkout -b main
+          
+          # Configure GitHub Actions bot identity for the commit
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config user.name "github-actions[bot]"
+          
+          # Commit the lightweight deployment package
+          git add .
+          git commit -m "Automated deployment: app.py, requirements, and deployment scripts"
+          
+          # Force push to overwrite the Hugging Face Space with this clean slate
+          git push --force https://Aryan9797:$HF_TOKEN@huggingface.co/spaces/Aryan9797/mashup-genre-classifier main
