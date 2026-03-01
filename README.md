@@ -3,10 +3,9 @@ title: Mashup Genre Classifier
 emoji: 🚀
 colorFrom: red
 colorTo: red
-sdk: docker
-app_port: 8501
-tags:
-  - streamlit
+sdk: streamlit
+sdk_version: "1.28.0" 
+app_file: app.py
 pinned: false
 short_description: classify music genre for songs.
 license: mit
