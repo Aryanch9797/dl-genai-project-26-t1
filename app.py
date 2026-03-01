@@ -29,7 +29,7 @@ with st.spinner("Initializing models into memory..."):
     cnn, resnet = load_cached_models()
 
 st.title("🎵 Song Genre Classifier")
-st.markdown("Upload a audio track. The Scratch CNN + ResNet-50 ensemble will extract features and predict the genre.")
+st.markdown("Upload a audio track. To get a genre prediction of the song. Supported formats: `.wav`, `.mp3`. \n supported genres: `blues`, `classical`, `country`, `disco`, `hiphop`, `jazz`, `metal`, `pop`, `reggae`, `rock`.")
     
 uploaded_file = st.file_uploader("Upload an audio file (.wav, .mp3)", type=["wav", "mp3"])
 
