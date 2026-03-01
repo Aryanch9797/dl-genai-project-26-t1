@@ -9,6 +9,7 @@ app_file: app.py
 pinned: false
 short_description: classify music genre for songs.
 license: mit
+python_version: 3.11
 ---
 # Music Genre Prediction
 
