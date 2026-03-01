@@ -40,6 +40,7 @@ pip install -r requirements.txt
 ```bash
 
 ├── DL-23f3003877-notebook-t12026.ipynb # Final kaggle submission notebook
+├── requirements.txt
 ├── LICENSE                             # Open-source license
 ├── README.md                           # Project documentation
 ├── notebooks/                          # EDA and training notebooks
