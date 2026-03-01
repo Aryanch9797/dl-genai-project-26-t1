@@ -5,14 +5,36 @@
 
 This project aims to classify audio into multiple genres. Ten possible genres are:
  **blues, classical, country, disco, hiphop, jazz, metal, pop, reggae** and **rock**
- 
-## Key Libraries / Modules
-* PyTorch
-* Torchaudio
-* Librosa
-* Transformers
-* Wandb
 
+
+ ## 📊 Project Overview
+
+**Predict the correct genre label** for each noisy mashup. The model should be capable of handling Instrument balance changes, Cross-song stem recombination, Tempo variations, added noise, and songs of different durations.
+
+### Key Results
+Model | Parameters | Macro F1 | Best For | Inference time (3k samples)
+|--    |-----------|----------|-----------------|--------------|
+**Scratch CNN**| 6.3M | 0.98540 | Fast, light and decent accuracy | 1min
+|**ResNet-50**| 23.5M| 0.98729  | Fast, moderate and Great accuracy | 1min 6sec
+|**AST**| 86.2M| 0.98720 | slow, heavy and Great accuracy | 6min 30 sec
+
+**Scratch CNN** and  **ResNet-50** ensemble scored **0.99068** while taking **2min** for 3k samples.
+
+**Scratch CNN** , **ResNet-50** and **AST** ensemble scored **0.99599** while taking **7min 30sec** for 3k samples.
+
+**Kaggle Competition Performance:**
+
+-   Private Leaderboard:  **NOT RELEASED YET** , ** **
+-   Public Leaderboard:  **0.99599** , **RANK 1**
+
+
+### Installation
+```bash
+ggit clone https://github.com/Aryanch9797/dl-genai-project-26-t1.git
+cd dl-genai-project-26-t1
+pip install -r requirements.txt
+```
+ 
 ## Repository Structure
 
 ```bash
@@ -55,32 +77,45 @@ This project aims to classify audio into multiple genres. Ten possible genres ar
     └── Trainers/                       # Custom training loops and optimization logic
         └── custom_trainer.py
 ```
-## Workflow
-```
-Data -> Data Preprocessing and Dataset creation -> Model configuration -> Training and Validation -> Save best checkpoint -> Predictions.
-```
 
-## 📊 Project Overview
+## Training Data Preparation & Engineering
 
-### Problem Statement
+The raw training data consists of 100 songs distributed evenly across **10 genres**. Each song is separated into 4 distinct audio stems:
+* `drums.wav`
+* `vocals.wav`
+* `bass.wav`
+* `others.wav`
 
-**Predict the correct genre label** for each noisy mashup. The model should be capable of handling  Instrument balance changes,   Cross-song stem recombination, Tempo variations, added noise and songs of different durations.
+The hidden test data presents several distinct domain shifts: songs range from 6 to 30 seconds in length, feature cross-song stem recombination, exhibit tempo variations, have altered instrument balances, and contain environmental noise (sourced from ESC-50).
 
-### Key Results
-Model | Parameters | Macro F1 | Best For | Inference time (3k samples)
-|--    |-----------|----------|-----------------|--------------|
-**Scratch CNN**| 6.3M | 0.98540 | Fast, light and decent accuracy | 1min
-|**ResNet-50**| 23.5M| 0.98729  | Fast, moderate and Great accuracy | 1min 6sec
-|**AST**| 86.2M| 0.98720 | slow, heavy and Great accuracy | 6min 30 sec
+To train a robust model capable of generalizing to these conditions, a highly diverse custom dataset was synthesized to closely mirror the test distribution.
 
-**Scratch CNN** and  **ResNet-50** ensemble scored 0.99068 while taking 2min for 3k samples.
+### Data Synthesis & Augmentation Pipeline
+To generate a single training sample, the following dynamic pipeline was applied:
 
-**Scratch CNN** , **ResNet-50** and **AST** ensemble scored 0.99599 while taking 7min 30sec for 3k samples.
+1. **Stem Recombination:** All 4 stems are chosen randomly within a target genre to create a completely new track, ensuring an equal number of training samples per genre.
+2. **Duration Sampling:** The final audio length is dynamically selected:
+   * **50% probability:** 30-second sample
+   * **40% probability:** 24 to 30-second sample
+   * **10% probability:** 6 to 24-second sample
+3. **Instrument Balancing (40% probability):** Randomly scales the amplitude of individual stems using a balance coefficient ranging from 0.4 to 1.0.
+4. **Beat Synchronization:** Computes the BPM for all 4 stems, randomly selects one stem as the anchor, and synchronizes the remaining stems to that tempo using PyTorch interpolation (`torch.nn.functional.interpolate`).
+5. **Noise Injection (70% probability):** A random 5-second noise clip is superimposed onto a random segment of the generated audio with random intensity.
 
-**Kaggle Competition Performance:**
+### Efficient Data Loading
+Handling a synthesized dataset of over **127,000 generated samples** requires efficient memory management. Rather than loading the entire dataset into RAM, the project leverages custom **PyTorch Dataset and DataLoader classes**. This approach allows for the lazy loading of spectrograms directly from storage in configurable batch sizes (e.g., 32, 64, or 128), ensuring stable memory consumption while continuously feeding the GPU during training.
 
--   Private Leaderboard:  **NOT RELEASED YET** , ** **
--   Public Leaderboard:  **0.99599** , **RANK 1**
+### Audio Preprocessing & Feature Extraction
+* **Chunking:** The synthesized audio is sliced into uniform **10.24-second chunks** (with shorter clips padded appropriately).
+* **Mel-Spectrogram Generation:** These chunks are converted into log-mel spectrograms.
+* **Design Rationale:** The 16,000 Hz sample rate and 10.24-second window were specifically chosen to create a highly optimized, standardized input shape across the project's models. At 16kHz, 10.24 seconds yields exactly 163,840 samples. Paired with a hop length of 160 and 128 mel-bins, this extracts a log-mel spectrogram of shape 128x1024. While multiple architectures are utilized, this specific dimension serves as the mathematically perfect input for the Audio Spectrogram Transformer (AST), making it an ideal anchor for the entire preprocessing pipeline.
+
+
+### Final Dataset Statistics
+* **Total Generated Samples:** 127,223
+* **Training Split:** 101,771 samples
+* **Validation Split:** 25,452 samples
+
 
 # **Architecture Details**
 
@@ -154,46 +189,8 @@ Audio Spectrogram Transformer with 86.2M parameters. A convolution free fully at
 *   Training data samples 101771.
 *   Validation data samples 25452.
 
-## Training Data Preparation
 
-The raw training data consists of 100 songs distributed evenly across **10 genres**. Each song is separated into 4 distinct audio stems:
-* `drums.wav`
-* `vocals.wav`
-* `bass.wav`
-* `others.wav`
 
-The hidden test data presents several distinct domain shifts: songs range from 6 to 30 seconds in length, feature cross-song stem recombination, exhibit tempo variations, have altered instrument balances, and contain environmental noise (sourced from ESC-50).
-
-To train a robust model capable of generalizing to these conditions, a highly diverse custom dataset was synthesized to closely mirror the test distribution.
-
-### Data Synthesis & Augmentation Pipeline
-To generate a single training sample, the following dynamic pipeline was applied:
-
-1. **Stem Recombination:** All 4 stems are chosen randomly within a target genre to create a completely new track, ensuring an equal number of training samples per genre.
-2. **Duration Sampling:** The final audio length is dynamically selected:
-   * **50% probability:** 30-second sample
-   * **40% probability:** 24 to 30-second sample
-   * **10% probability:** 6 to 24-second sample
-3. **Instrument Balancing (40% probability):** Randomly scales the amplitude of individual stems using a balance coefficient ranging from 0.4 to 1.0.
-4. **Beat Synchronization:** Computes the BPM for all 4 stems, randomly selects one stem as the anchor, and synchronizes the remaining stems to that tempo using PyTorch interpolation (`torch.nn.functional.interpolate`).
-5. **Noise Injection (70% probability):** A random 5-second noise clip is superimposed onto a random segment of the generated audio with random intensity.
-
-### Audio Preprocessing & Feature Extraction
-* **Chunking:** The synthesized audio is sliced into uniform **10.24-second chunks** (with shorter clips padded appropriately).
-* **Mel-Spectrogram Generation:** These chunks are converted into log-mel spectrograms.
-* **Design Rationale:** The 16,000 Hz sample rate and 10.24-second window were specifically chosen to create a highly optimized, standardized input shape across the project's models. At 16kHz, 10.24 seconds yields exactly 163,840 samples. Paired with a hop length of 160 and 128 mel-bins, this extracts a log-mel spectrogram of shape 128x1024. While multiple architectures are utilized, this specific dimension serves as the mathematically perfect input for the Audio Spectrogram Transformer (AST), making it an ideal anchor for the entire preprocessing pipeline.
-
-### Final Dataset Statistics
-* **Total Generated Samples:** 127,223
-* **Training Split:** 101,771 samples
-* **Validation Split:** 25,452 samples
-
-### Installation
-```bash
-ggit clone https://github.com/Aryanch9797/dl-genai-project-26-t1.git
-cd dl-genai-project-26-t1
-pip install -r requirements.txt
-```
 
 ## 📚 Key References
 * [Audio Deep Learning Made Simple](https://towardsdatascience.com/audio-deep-learning-made-simple-part-1-state-of-the-art-techniques-da1d3dff2504/)
