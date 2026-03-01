@@ -8,6 +8,7 @@ ipython>=8.0.0
 torch
 torchaudio
 torchvision
+torchcodec
 soundfile==0.13.1
 pytorch-lightning==2.6.0
 scikit-learn==1.6.1
