@@ -13,3 +13,4 @@ scikit-learn==1.6.1
 torchmetrics==1.8.2
 transformers==4.57.1
 wandb==0.22.2
+stremlit==1.28.0
