@@ -5,13 +5,22 @@ import torch.nn as nn
 import librosa
 import numpy as np
 from src.Deployment_predictions.deployment_inference import load_models, predict_ensemble
+from huggingface_hub import hf_hub_download
 
 st.set_page_config(page_title="Mashup Genre Classifier", layout="centered")
 
 @st.cache_resource
 def load_cached_models():
-    cnn_path, resnet_path = 'weights/Scratch_CNN.pth', 'weights/ResNet.pth'
+    repo_id = "Aryan9797/mashup-ensemble-weights"
+    cnn_file = "Scratch_CNN.pth"
+    resnet_file = "ResNet.pth"
+
+    token = os.environ.get("HF_TOKEN")
+
+    cnn_path = hf_hub_download(repo_id=repo_id, filename=cnn_file, token=token)
+    resnet_path = hf_hub_download(repo_id=repo_id, filename=resnet_file, token=token)
     cnn_model, resnet_model = load_models(cnn_path, resnet_path)
+
     cnn_model.eval()
     resnet_model.eval()
     return cnn_model, resnet_model
