@@ -54,6 +54,7 @@ pip install -r requirements.txt
 
 ├── DL-23f3003877-notebook-t12026.ipynb # Final kaggle submission notebook
 ├── requirements.txt
+├── app.py                              # Streamlit app for deployment
 ├── LICENSE                             # Open-source license
 ├── README.md                           # Project documentation
 ├── notebooks/                          # EDA and training notebooks
@@ -83,6 +84,9 @@ pip install -r requirements.txt
     ├── inference/                      # Scripts for prediction on test data
     │   ├── ensemble_inference.py
     │   └── inference.py
+    ├── Deployment_predictions/         # Scripts for deployment predictions
+    │   ├── deployment_data_perprocessor.py
+    │   └── deployment_inference.py
     ├── models/                         # Model class definitions
     │   ├── AST.py
     │   ├── Resnet_50.py
