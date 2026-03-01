@@ -1,9 +1,8 @@
 name: Sync to Hugging Face Hub
 on:
   push:
-    branches: [main] # This triggers the sync whenever you push to main
+    branches: [main]
 
-  # This allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
 jobs:
@@ -14,7 +13,23 @@ jobs:
         with:
           fetch-depth: 0
           lfs: true 
+          
+      - name: Prepare Production Build (Remove Notebooks)
+        run: |
+          # 1. Delete the heavy experimental folders and notebook files
+          rm -rf notebooks/
+          rm -f *.ipynb
+          
+          # 2. Configure a temporary Git identity on the runner
+          git config --global user.email "action@github.com"
+          git config --global user.name "GitHub Action Deployment"
+          
+          # 3. Create a clean, lightweight commit just for Hugging Face
+          git add -A
+          git commit -m "Production build: stripped heavy notebooks" || echo "No changes"
+          
       - name: Push to Hugging Face
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
-        run: git push --force https://Aryan9797:$HF_TOKEN@huggingface.co/spaces/Aryan9797/mashup-genre-classifier main
+        # Notice we changed 'main' to 'HEAD:main' at the end to push the new clean commit
+        run: git push --force https://Aryan9797:$HF_TOKEN@huggingface.co/spaces/Aryan9797/mashup-genre-classifier HEAD:main
