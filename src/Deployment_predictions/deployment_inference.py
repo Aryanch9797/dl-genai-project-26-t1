@@ -1,14 +1,19 @@
 import torch
 import pandas as pd
 from src.Deployment_predictions import process_audio
+from src.models.scratch_CNN import CNN_mashup_model
+from src.models.Resnet_50 import ResNet50_GenreClassifier
 
 
 def load_models(cnn_path, renet_path):
     """
     Loads the CNN and ResNet models from the specified paths.
     """
-    cnn_model = torch.load(cnn_path, map_location='cpu')
-    resnet_model = torch.load(renet_path, map_location='cpu')
+    cnn_model = CNN_mashup_model(7,3,16000,0.2,32)
+    resnet_model = ResNet50_GenreClassifier()
+
+    cnn_model.load_state_dict(torch.load(cnn_path, map_location='cpu'))
+    resnet_model.load_state_dict(torch.load(renet_path, map_location='cpu'))
     
     return cnn_model, resnet_model
 
