@@ -7,7 +7,7 @@ import numpy as np
 from src.Deployment_predictions.deployment_inference import load_models, predict_ensemble
 from huggingface_hub import hf_hub_download
 
-st.set_page_config(page_title="Mashup Genre Classifier", layout="centered")
+st.set_page_config(page_title="Song Genre Classifier", layout="centered")
 
 @st.cache_resource
 def load_cached_models():
@@ -28,8 +28,8 @@ def load_cached_models():
 with st.spinner("Initializing models into memory..."):
     cnn, resnet = load_cached_models()
 
-st.title("🎵 Noisy Mashup Genre Classifier")
-st.markdown("Upload a noisy audio track. The Scratch CNN + ResNet-50 ensemble will extract features and predict the genre.")
+st.title("🎵 Song Genre Classifier")
+st.markdown("Upload a audio track. The Scratch CNN + ResNet-50 ensemble will extract features and predict the genre.")
     
 uploaded_file = st.file_uploader("Upload an audio file (.wav, .mp3)", type=["wav", "mp3"])
 
