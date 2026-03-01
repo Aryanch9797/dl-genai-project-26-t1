@@ -18,14 +18,17 @@ jobs:
           # 1. Create a fresh, isolated directory
           mkdir deploy_space
           
-          # 2. Copy the root-level deployment files including the README
+          # 2. Copy the root-level deployment files
           cp app.py deploy_space/
           cp requirements.txt deploy_space/
           cp README.md deploy_space/
           
-          # 3. Maintain the directory structure for your imports
+          # 3. Maintain the directory structure for your modular code
           mkdir -p deploy_space/src
+          
+          # Copying the specific folders needed for inference
           cp -r src/Deployment_predictions deploy_space/src/
+          cp -r src/models deploy_space/src/
 
       - name: Push isolated files to Hub
         env:
@@ -33,17 +36,15 @@ jobs:
         run: |
           cd deploy_space
           
-          # Initialize a brand new git repository
+          # Initialize a clean repository to stay under the 10MB/history limits
           git init
           git checkout -b main
           
-          # Configure GitHub Actions bot identity
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git config user.name "github-actions[bot]"
           
-          # Commit the lightweight deployment package
           git add .
-          git commit -m "Automated deployment: app.py, requirements, README, and deployment scripts"
+          git commit -m "Deployment: Added app files and src/models"
           
-          # Force push to overwrite the Hugging Face Space
+          # Force push to the Space
           git push --force https://Aryan9797:$HF_TOKEN@huggingface.co/spaces/Aryan9797/mashup-genre-classifier main
