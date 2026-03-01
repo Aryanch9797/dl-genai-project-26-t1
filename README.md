@@ -189,7 +189,16 @@ Audio Spectrogram Transformer with 86.2M parameters. A convolution free fully at
 *   Training data samples 101771.
 *   Validation data samples 25452.
 
+## 📈 Training Metrics & Logging
 
+Training runs, hyperparameter tuning, and system metrics were tracked using **Weights & Biases (WandB)**. The logs demonstrate stable convergence across all three architectures and validate that the models successfully generalize to the validation set.
+
+<img width="1493" height="641" alt="WandB Validation F1 Macro" src="https://github.com/user-attachments/assets/0fe63471-efa7-4cb2-b31b-a137db63742f" />
+*Note: In the graph above, the green line (`layer_7_kernal_3_with_512_chunks_v3`) represents the Scratch CNN model.*
+
+### Training Insights:
+* **Convergence Rates:** The AST model reached optimal convergence rapidly, fully training in just 10 epochs. Conversely, the ResNet-50 and Scratch CNN architectures required approximately 40 epochs to fully converge.
+* **Generalization vs. Capacity:** The AST achieved the highest validation F1 score during training. However, during hidden test data evaluation, its performance was nearly identical to the ResNet-50. This is likely due to the AST's massive parameter count (86.2M) slightly overfitting to the synthesized training distribution, making the ResNet-50 (23.5M parameters) equally robust when facing the minor distribution shifts present in the final test data.
 
 
 ## 📚 Key References
