@@ -48,17 +48,25 @@ class AST_model(pl.LightningModule):
         self.log('val/f1_macro',  self.val_f1,  on_step=False, on_epoch=True, prog_bar=True, logger=True)
 
     def configure_optimizers(self):
-        # Separate parameters
         backbone_params = self.model.audio_spectrogram_transformer.parameters()
         head_params = self.model.classifier.parameters()
-    
+        
+        lr_head = 5e-5      
+        lr_backbone = 1e-5  
+        
         optimizer = torch.optim.AdamW([
-            {'params': backbone_params, 'lr': self.lr * 0.1}, # Slow learning for the body
-            {'params': head_params, 'lr': self.lr}           # Faster learning for the head
+            {'params': backbone_params, 'lr': lr_backbone}, 
+            {'params': head_params, 'lr': lr_head}          
         ], weight_decay=1e-4)
-    
-        scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=10)
-        return [optimizer], [scheduler]
+        
+        scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=8)
+        return {
+            "optimizer": optimizer,
+            "lr_scheduler": {
+                "scheduler": scheduler,
+                "monitor": "val/f1_macro", 
+            },
+        }
 
     def forward(self, x):
         x = x.squeeze(1)
