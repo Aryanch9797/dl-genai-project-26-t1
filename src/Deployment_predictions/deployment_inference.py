@@ -1,6 +1,6 @@
 import torch
 import pandas as pd
-from src.Deployment_predictions import process_audio
+from src.Deployment_predictions.deployment_data_perprocessor import process_audio
 from src.models.scratch_CNN import CNN_mashup_model
 from src.models.Resnet_50 import ResNet50_GenreClassifier
 
