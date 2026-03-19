@@ -155,10 +155,13 @@ Simple CNN with  6.3M parameters it is faster to train and inference while havin
 * Linear Classifier (512 -> 10 -> genre logits)   
 
 ### **Training Strategy:**
-*   Batch size 124.
-*   Learning rate of 0.001 with weight decay of 0.01 and reduce lr with a factor of 0.5.
-*   Training data samples 101771.
-*   Validation data samples 25452.
+* Optimizer AdamW (lr=0.001, weight_decay=0.01)
+* CrossEntropyLoss (Balanced samples)
+* Scheduler ReduceLROnPlateau (factor=0.5, patience=2)
+* 40 epoch and 5 epoch patience for early stopping.
+* Batch size 124
+* Early stopping triggered at epoch 29
+
 
   
 
@@ -181,11 +184,12 @@ Residual network having 23.5M parameters with skipped connections to make deep a
   6. **Skip Connection:** The original block input is added directly to this output before the final ReLU activation.
 
 ### **Training Strategy:**
-* **Batch Size:** 64
-* **Learning Rate:** Initial rate of `0.001` with a weight decay of `0.01`. A learning rate scheduler is used to reduce the LR by a factor of `0.5`.
-* **Training Data:** 101,771 samples
-* **Validation Data:** 25,452 samples
-
+* Optimizer AdamW (lr=0.001, weight_decay=0.01)
+* CrossEntropyLoss (Balanced samples)
+* Scheduler ReduceLROnPlateau (factor=0.5, patience=2)
+* 40 epoch and 5 epoch patience for early stopping.
+* Batch size 64
+* Early stopping triggered at epoch 30
 
 ## 3. **AST (Audio Spectrogram Transformer)**
 Audio Spectrogram Transformer with 86.2M parameters. A convolution free fully attention based model trained on audio log mel-spectrograms.
@@ -202,10 +206,14 @@ Audio Spectrogram Transformer with 86.2M parameters. A convolution free fully at
 * [CLS] token is retrieved from the sequence and then we apply a classification layer to get logits for all 10 classes.
 
 ### **Training Strategy:**
-* Batch size 32.
-* Learning rate of 5e-5 for head/classifier and 1e-5 for backbone/transformer layers.
-*   Training data samples 101771.
-*   Validation data samples 25452.
+* Optimizer for backbone AdamW (lr=1e-5, weight_decay=1e-4)
+* Optimizer for head AdamW (lr=5e-5, weight_decay=1e-4)
+* CrossEntropyLoss (Balanced samples)
+* Scheduler CosineAnnealingLR(T_max=8)
+* 40 epoch and 5 epoch patience for early stopping.
+* Batch size 16
+* Early stopping triggered at epoch 10
+
 
 ## 📈 Training Metrics & Logging
 
