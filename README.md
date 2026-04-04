@@ -37,7 +37,7 @@ Model | Parameters | Macro F1 | Best For | Inference time (3k samples)
 
 **Kaggle Competition Performance:**
 
--   Private Leaderboard:  **NOT RELEASED YET** , ** **
+-   Private Leaderboard:  **0.99257** , **RANK 1**
 -   Public Leaderboard:  **0.99599** , **RANK 1**
 
 
