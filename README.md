@@ -226,6 +226,9 @@ Training runs, hyperparameter tuning, and system metrics were tracked using **We
 * **Convergence Rates:** The AST model reached optimal convergence rapidly, fully training in just 10 epochs. Conversely, the ResNet-50 and Scratch CNN architectures required approximately 40 epochs to fully converge.
 * **Generalization vs. Capacity:** The AST achieved the highest validation F1 score during training. However, during hidden test data evaluation, its performance was nearly identical to the ResNet-50. This is likely due to the AST's massive parameter count (86.2M) slightly overfitting to the synthesized training distribution, making the ResNet-50 (23.5M parameters) equally robust when facing the minor distribution shifts present in the final test data.
 
+## Deployment
+* [Hugging Face deployment](https://huggingface.co/spaces/Aryan9797/mashup-genre-classifier)
+
 
 ## 📚 Key References
 * [Audio Deep Learning Made Simple](https://towardsdatascience.com/audio-deep-learning-made-simple-part-1-state-of-the-art-techniques-da1d3dff2504/)
